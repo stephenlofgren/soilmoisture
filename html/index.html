@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <script src="./js/tether.min.js" inline></script>
+    <script src="./js/jquery.min.js" inline></script>
+    <script src="./js/bootstrap.min.js" inline></script>
+    <link rel="stylesheet" href="./css/bootstrap.min.css" inline/>
+    <style>
+      label{
+        width:150px;
+      }
+    </style>
+    <script>
+
+      function loadSettings(){
+        $.ajax({
+             type: "GET",
+             url: "/settings",
+             dataType: "json",
+             success: function (msg) {
+                 if (msg) {
+                   console.log(msg);
+                   $("#key").val(msg["key"]);
+                   $("#ssid").val(msg["ssid"]);
+                   $("password").val("*******");
+                   $("#accessPointName").val(msg["accessPointName"]);
+                   $("#blynkKey").val(msg["blynkKey"]);
+                   $("#sleepInterval").val(msg["sleepInterval"]);
+                   $("#valuePin").val(msg["valuePin"]);
+                   $("#messagePin").val(msg["messagePin"]);
+                 } else {
+                   console.log("some stuff");
+                 }
+             }
+         });
+      };
+
+      $(document).ready(function(){
+        loadSettings();
+      });
+
+      function submitForm(){
+        var settings = {
+          ssid: $("#key").val(),
+          ssid: $("#ssid").val(),
+          password: $("#password").val(),
+          accessPointName: $("#accessPointName").val(),
+          blynkKey: $("#blynkKey").val(),
+          sleepInterval: $("#sleepInterval").val(),
+          valuePin: $("#valuePin").val(),
+          messagePin: $("#messagePin").val(),
+        };
+
+        $.ajax({
+             type: "POST",
+             url: "/",
+             dataType: "json",
+             success: function (msg) {
+                 if (msg) {
+                     location.reload(true);
+                 } else {
+
+                 }
+             },
+
+             data: settings
+         });
+      };
+    </script>
+  </head>
+
+  <body>
+    <form id="formSettings">
+      <label for="ssid">SSID</label>
+      <input type="text" id="ssid" />
+      <br />
+      <label for="password">Password</label>
+      <input type="password" id="password" />
+      <br />
+      <label for="accessPointName">Access Point Name</label>
+      <input id="accessPointName" />
+      <br />
+      <label for="blynkKey">Blynk Key</label>
+      <input id="blynkKey" />
+      <br />
+      <label for="sleepInterval">Sleep Interval</label>
+      <input id="sleepInterval" />
+      <br />
+      <label for="valuePin">Value Pin</label>
+      <input id="valuePin" />
+      <br />
+      <label for="messagePin">Message Pin</label>
+      <input id="messagePin" />
+      <br />
+      <input value="Submit" type="submit" onclick="submitForm()" />
+    </form>
+  </body>
+
+</html>

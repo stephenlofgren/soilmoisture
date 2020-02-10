@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.linux": {
+        "PATH": "/home/stephen/.platformio/penv/bin:/home/stephen/.platformio/penv:/home/stephen/.npm-global/bin:/home/stephen/.local/bin:/home/stephen/bin:/home/stephen/.npm-global/bin:/home/stephen/.local/bin:/home/stephen/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin:/mnt/shared/bin",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
