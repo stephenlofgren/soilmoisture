@@ -59,12 +59,11 @@ void webSetupHandlers(){
           Serial.printf("password changed to %s\n", newSettings.password );
         }
         else if(p->name() == "accessPointName"){
-          strcpy(newSettings.accessPointName, (char*)p->value().c_str());
+          p->value().toCharArray(newSettings.accessPointName, 32);
           Serial.printf("ap changed to %s\n", newSettings.accessPointName );
         }
         else if(p->name() == "blynkKey"){
-          Serial.println(p->value().c_str());
-          strcpy(newSettings.blynkKey, (char*)p->value().c_str());
+          p->value().toCharArray(newSettings.blynkKey, 32);
           Serial.printf("blynkKey changed to %s\n", newSettings.blynkKey );
         }
         else if(p->name() == "sleepInterval"){

@@ -148,6 +148,8 @@ void printSettings(Settings s){
   Serial.println(s.accessPointName);
   Serial.print(" blynkKey: ");
   Serial.println(s.blynkKey);
+  Serial.print(" sleepInterval: ");
+  Serial.println(s.sleepInterval);
   Serial.print(" ver: ");
   Serial.println(s.version);
   Serial.print(" valuePin: ");

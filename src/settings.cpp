@@ -43,7 +43,7 @@ Settings createSettings(char key[32]
     , char ssid[32]
     , char password[32]
     , char accessPointName[32]
-    , char blynkKey[32]
+    , char blynkKey[31]
     , int sleepInterval
     , int valuePin
     , int messagePin){
@@ -111,7 +111,7 @@ void resetSettings(){
     , (char*)"*******"
     , (char*)"WifiMoisture"
     , (char*)"*******"
-    , 30
+    , ESP.deepSleepMax() / 60000000
     , 1
     , 2);
     storeSettings(settings);

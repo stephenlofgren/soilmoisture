@@ -29,9 +29,12 @@ void wifiSetup(){
 }
 
 void blynkSetup(){
-  Serial.println("Connecting to Blynk");
   Settings s = getSettings();
-  Blynk.begin(s.blynkKey, s.ssid, s.password);
+  Serial.print("Connecting to Blynk with key: ");
+  Serial.println(s.blynkKey);
+  Blynk.begin("XS6b2amU2FkCDLTGB6kLmZ_fq5QKufY1", s.ssid, s.password);
+  Blynk.run();
+  Serial.println("Blynk Running");
 }
 
 void config(){
@@ -73,16 +76,17 @@ String interpretReading(float moistureValue)
 }
 
 void loopRun(){
-  Serial.println("running");
+  Serial.println("starting loop");
   Settings s = getSettings();
+  printSettings(s);
   digitalWrite(D1, HIGH);
   float moisture = readMoisture();
   if(moisture > -1) //probe attached
   {
     wifiSetup();
+    delay(1000);
     blynkSetup();
-    Blynk.run();
-    Serial.println("Blynk Running");
+    delay(1000);
     Blynk.virtualWrite(s.valuePin, moisture);
     Blynk.virtualWrite(s.messagePin, interpretReading(moisture));
     WiFi.mode(WIFI_OFF);
@@ -91,7 +95,8 @@ void loopRun(){
     Serial.print("Goint to sleep for ");
     Serial.print(s.sleepInterval);
     Serial.println(" seconds");
-    ESP.deepSleep(s.sleepInterval * 1000000);
+    ESP.deepSleep(s.sleepInterval);
+    delay(1000);
   }
   else // probe detached put in config mode
   {
@@ -100,12 +105,16 @@ void loopRun(){
 }
 void setup() {
   pinMode(D1, OUTPUT); 
-  pinMode(D4, INPUT_PULLUP);
-  int doConf = digitalRead(D4);
+  pinMode(D2, INPUT_PULLUP);
+  int doConf = digitalRead(D2);
   Serial.begin(115200);
   Serial.setDebugOutput(true);
+  delay(1000);
+  Serial.print("conf ");
+  Serial.println(doConf);
   WiFi.mode(WIFI_OFF);
-  if(settingsSet() || doConf == LOW){
+  delay(1000);
+  if(settingsSet() && doConf == HIGH){
     loopfcnPtr = loopRun;
   }
   else{
