@@ -47,7 +47,7 @@ void loopConfig(){
 
 void loopRun(){
   Serial.println("starting loop");
-  Settings s = printSettings();
+  _sensorSettings = printSettings();
   digitalWrite(D1, HIGH);
   float moisture = readMoisture();
   if(moisture > -1) //probe attached
@@ -57,9 +57,9 @@ void loopRun(){
     digitalWrite(D5, LOW);
 
     Serial.print("Going to sleep for ");
-    Serial.print(s.sleepInterval);
-    Serial.println(" seconds");
-    ESP.deepSleep(s.sleepInterval);
+    Serial.print(_sensorSettings.sleepInterval);
+    Serial.println(" minutes");
+    ESP.deepSleep(_sensorSettings.sleepInterval / 60000000);
     delay(1000);
   }
   else // probe detached put in config mode
@@ -71,9 +71,11 @@ void setup() {
   pinMode(D1, OUTPUT); 
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-
-  pinMode(D2, INPUT_PULLUP);
-  int doConf = digitalRead(D2);
+  delay(1000);
+  pinMode(D0, INPUT); 
+  int doConf = digitalRead(D0);
+  Serial.print("D0 ");
+  Serial.println(doConf);
 
   if(settingsSet() && doConf == HIGH){
     loopfcnPtr = loopRun;
