@@ -139,9 +139,9 @@ void printWifiStatus() {
 
 void printSettings(Settings s){
   Serial.print("Conf Key: ");
-  Serial.print(s.key);
+  Serial.println(s.key);
   Serial.print(" SSID: ");
-  Serial.print(s.ssid);
+  Serial.println(s.ssid);
   Serial.print(" pwd: ");
   Serial.println(s.password);
   Serial.print(" ap: ");
@@ -156,10 +156,16 @@ void printSettings(Settings s){
   Serial.println(s.valuePin);
   Serial.print(" messagePin: ");
   Serial.println(s.messagePin);
-}
+  Serial.print(" mqttServer: ");
+  Serial.println(s.mqttServer);
+  Serial.print(" mqttUser: ");
+  Serial.println(s.mqttUser);
+  Serial.print(" mqttPassword: ");
+  Serial.println(s.mqttPassword);
+ }
 Settings printSettings(){
-  Settings s = getSettings();
-  printSettings(s);
-  return s;
+  _sensorSettings = getSettings();
+  printSettings(_sensorSettings);
+  return _sensorSettings;
 }
 

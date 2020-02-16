@@ -3,6 +3,7 @@ import zlib
 import os
 import htmlark
 
+
 dataFolder = 'src/data/'
 staticFolder = 'src/static/'
 
@@ -15,7 +16,7 @@ def toHeader(source, dest, fileName):
 
     #zipped = zlib.compress(packed_html.encode('utf-8'))
     zipped = open(destFile, 'rb').read()
-    os.remove(destFile)
+    #os.remove(destFile)
     #print(zipped)
     destFile = destFile + ".h"
     safeName = fileName.replace('.', '_')
@@ -35,6 +36,3 @@ def toHeader(source, dest, fileName):
         f.close()
 
 toHeader("html/index.html", "src/static", "index.html.gz")
-
-
-

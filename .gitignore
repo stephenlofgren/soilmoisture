@@ -4,3 +4,5 @@
 .vscode/launch.json
 .vscode/ipch
 node_modules/
+src/data
+include/ver.h

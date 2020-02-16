@@ -1,6 +1,7 @@
 #include "headers/web.h"
 #include "headers/diagnostics.h"
 #include <ver.h>
+#include <string>
 
 using namespace std; // stringstream, like almost everything, is in std
 
@@ -37,6 +38,11 @@ void webSetupHandlers(){
     request->send(response);
 
   });
+
+  server.on("/reset", HTTP_POST, [](AsyncWebServerRequest *request){
+    resetSettings();
+  });
+
   server.on("/index.html", HTTP_POST, [](AsyncWebServerRequest *request){
     int i;
     int params = request->params();
@@ -51,11 +57,15 @@ void webSetupHandlers(){
         Serial.printf("_POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
         //need to pull post params and make a settings object
         if(p->name() == "ssid"){
-          strcpy(newSettings.ssid, (char*)p->value().c_str());
+          p->value().toCharArray(newSettings.ssid, 32);
           Serial.printf("ssid changed to %s\n", newSettings.ssid );
         }
+        if(p->name() == "chipName"){
+          p->value().toCharArray(newSettings.chipName, 32);
+          Serial.printf("chipName changed to %s\n", newSettings.chipName );
+        }
         else if(p->name() == "password"){
-          strcpy(newSettings.password, (char*)p->value().c_str());
+          p->value().toCharArray(newSettings.password, 32);
           Serial.printf("password changed to %s\n", newSettings.password );
         }
         else if(p->name() == "accessPointName"){
@@ -63,7 +73,7 @@ void webSetupHandlers(){
           Serial.printf("ap changed to %s\n", newSettings.accessPointName );
         }
         else if(p->name() == "blynkKey"){
-          p->value().toCharArray(newSettings.blynkKey, 32);
+          p->value().toCharArray(newSettings.blynkKey, 33);
           Serial.printf("blynkKey changed to %s\n", newSettings.blynkKey );
         }
         else if(p->name() == "sleepInterval"){
@@ -78,6 +88,21 @@ void webSetupHandlers(){
           newSettings.messagePin = atoi((char*)p->value().c_str());
           Serial.printf("messagePin changed to %d\n", newSettings.messagePin );
         }
+        else if(p->name() == "mqttServer"){
+          p->value().toCharArray(newSettings.mqttServer, 32);
+          Serial.printf("mqttServer changed to %s\n", newSettings.mqttServer );
+        }
+        else if(p->name() == "mqttUser"){
+          p->value().toCharArray(newSettings.mqttUser, 32);
+          Serial.printf("mqttUser changed to %s\n", newSettings.mqttUser );
+        }
+        else if(p->name() == "mqttPassword"){
+          p->value().toCharArray(newSettings.mqttPassword, 32);
+          Serial.printf("mqttPassword changed to %s\n", newSettings.mqttPassword );
+        }
+      }
+      else{
+        Serial.printf("_QUERY[%s]: %s\n", p->name().c_str(), p->value().c_str());
       }
   }
   Serial.print("Received Settings - ");

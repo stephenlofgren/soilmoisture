@@ -16,10 +16,7 @@ float readMoisture() {
     Vsum = Vsum + Vo;
     delay(10);
   }
-  
   Vo = Vsum / Vcount;
-  Serial.print("reading ");
-  Serial.println(Vo);
   return Vo;
 }
 

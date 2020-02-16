@@ -22,6 +22,7 @@
                  if (msg) {
                    console.log(msg);
                    $("#key").val(msg["key"]);
+                   $("#chipName").val(msg["chipName"]);
                    $("#ssid").val(msg["ssid"]);
                    $("password").val("*******");
                    $("#accessPointName").val(msg["accessPointName"]);
@@ -29,6 +30,9 @@
                    $("#sleepInterval").val(msg["sleepInterval"]);
                    $("#valuePin").val(msg["valuePin"]);
                    $("#messagePin").val(msg["messagePin"]);
+                   $("#mqttServer").val(msg["mqttServer"]);
+                   $("#mqttUser").val(msg["mqttUser"]);
+                   $("#mqttPassword").val(msg["mqttPassword"]);
                  } else {
                    console.log("some stuff");
                  }
@@ -43,6 +47,7 @@
       function submitForm(){
         var settings = {
           ssid: $("#key").val(),
+          chipName: $("#chipName").val(),
           ssid: $("#ssid").val(),
           password: $("#password").val(),
           accessPointName: $("#accessPointName").val(),
@@ -50,6 +55,9 @@
           sleepInterval: $("#sleepInterval").val(),
           valuePin: $("#valuePin").val(),
           messagePin: $("#messagePin").val(),
+          mqttServer: $("#mqttServer").val(),
+          mqttUser: $("#mqttUser").val(),
+          mqttPassword: $("#mqttPassword").val(),
         };
 
         $.ajax({
@@ -67,11 +75,29 @@
              data: settings
          });
       };
+
+      function resetSettings(){
+        $.ajax({
+             type: "POST",
+             url: "/reset",
+             dataType: "json",
+             success: function (msg) {
+                 if (msg) {
+                     location.reload(true);
+                 } else {
+
+                 }
+             }             
+         });
+      }
     </script>
   </head>
 
   <body>
     <form id="formSettings">
+      <label for="chipName">Chip Name</label>
+      <input type="text" id="chipName" />
+      <br />
       <label for="ssid">SSID</label>
       <input type="text" id="ssid" />
       <br />
@@ -93,7 +119,17 @@
       <label for="messagePin">Message Pin</label>
       <input id="messagePin" />
       <br />
-      <input value="Submit" type="submit" onclick="submitForm()" />
+      <label for="mqttServer">MQTT Host</label>
+      <input id="mqttServer" />
+      <br />
+      <label for="mqttUser">MQTT User</label>
+      <input id="mqttUser" />
+      <br />
+      <label for="mqttPassword">MQTT Password</label>
+      <input id="mqttPassword" />
+      <br />
+      <input value="Submit" name="submit" type="button" onclick="submitForm()" />
+      <input value="Reset" name="submit" type="button" onclick="resetSettings()" />
     </form>
   </body>
 

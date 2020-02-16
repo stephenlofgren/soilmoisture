@@ -1,5 +1,5 @@
-#ifndef TEMPERATURE_H
-    #define TEMPERATURE_H
+#ifndef MOISTURE_H
+    #define MOISTURE_H
     void setSensorPin(int pin);
     float readMoisture();
 #endif
