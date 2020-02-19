@@ -5,7 +5,7 @@
 #include "headers/web.h"
 #include "headers/moisture.h"
 #include <ver.h>
-#include "headers/diagnostics.h"
+#include "headers/utilities.h"
 #include "headers/mqtt.h"
 #include "headers/blynk.h"
 
@@ -57,9 +57,12 @@ void loopRun(){
     digitalWrite(D5, LOW);
 
     Serial.print("Going to sleep for ");
-    Serial.print(_sensorSettings.sleepInterval);
-    Serial.println(" minutes");
-    ESP.deepSleep(_sensorSettings.sleepInterval / 60000000);
+    uint64 sleep = (uint64)_sensorSettings.sleepInterval * 60000000; 
+    Serial.print(uint64ToString(sleep));
+    Serial.print("/");
+    Serial.print(uint64ToString(ESP.deepSleepMax()));
+    Serial.println(" microseconds");
+    ESP.deepSleep(sleep);
     delay(1000);
   }
   else // probe detached put in config mode

@@ -1,4 +1,4 @@
-#include "headers/diagnostics.h"
+#include "headers/utilities.h"
 #include "headers/settings.h"
 
 char* decodeWiFiStatus(wl_status_t status){
@@ -167,5 +167,22 @@ Settings printSettings(){
   _sensorSettings = getSettings();
   printSettings(_sensorSettings);
   return _sensorSettings;
+}
+
+String uint64ToString(uint64_t input) {
+  String result = "";
+  uint8_t base = 10;
+
+  do {
+    char c = input % base;
+    input /= base;
+
+    if (c < 10)
+      c +='0';
+    else
+      c += 'A' - 10;
+    result = c + result;
+  } while (input);
+  return result;
 }
 

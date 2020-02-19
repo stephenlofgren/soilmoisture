@@ -21,8 +21,9 @@ void mqttLoop(int moistureReading)
         delay(500);
     }
     Serial.println("Publishing MQTT");
+    
     String topic = String("ESP") + _sensorSettings.chipName + String("/moisture/");
     client.publish(topic.c_str(), String(moistureReading).c_str(), true);
-    client.loop();
+        client.loop();
 
 }

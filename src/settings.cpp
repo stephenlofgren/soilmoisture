@@ -1,5 +1,5 @@
 #include "headers/settings.h"
-#include "headers/diagnostics.h"
+#include "headers/utilities.h"
 #include <ver.h>
 #include <EEPROM.h>
 
@@ -157,6 +157,7 @@ String getJson(Settings s){
     + String("\", \n \"accessPointName\":\"")     + s.accessPointName
     + String("\", \n \"blynkKey\":\"")     + s.blynkKey
     + String("\", \n \"sleepInterval\":\"")     + s.sleepInterval
+    + String("\", \n \"maxSleepInterval\":\"")     + uint64ToString(ESP.deepSleepMax() / (uint64)60000000)
     + String("\", \n \"valuePin\":\"")     + s.valuePin
     + String("\", \n \"messagePin\":\"")     + s.messagePin
     + String("\", \n \"mqttServer\":\"")     + s.mqttServer

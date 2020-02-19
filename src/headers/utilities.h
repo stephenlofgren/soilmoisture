@@ -1,5 +1,5 @@
-#ifndef DIAGNOSTICS_H
-#define DIAGNOSTICS_H
+#ifndef UTILITIES_H
+#define UTILITIES_H
 
 #include <ESP8266WiFi.h>
 #include <Arduino.h>  // for type definitions
@@ -9,5 +9,5 @@ void printWifiStatus();
 Settings printSettings();
 char* printWiFiDisconnectReason(int reasonCode);
 void printSettings(Settings s);
-
+String uint64ToString(uint64_t input);
 #endif
