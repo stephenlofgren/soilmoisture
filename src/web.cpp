@@ -41,7 +41,8 @@ void webSetupHandlers(){
 
   server.on("/reset", HTTP_POST, [](AsyncWebServerRequest *request){
     resetSettings();
-  });
+    request->send(200, "text/plain", "Success");
+});
 
   server.on("/index.html", HTTP_POST, [](AsyncWebServerRequest *request){
     int i;
@@ -104,13 +105,13 @@ void webSetupHandlers(){
       else{
         Serial.printf("_QUERY[%s]: %s\n", p->name().c_str(), p->value().c_str());
       }
-  }
-  Serial.print("Received Settings - ");
+    }
+    Serial.print("Received Settings - ");
 
-  printSettings(newSettings);
-  storeSettings(newSettings);
-  iSettingsChanged(newSettings);
-  request->send(200, "text/plain", "Success");
+    printSettings(newSettings);
+    storeSettings(newSettings);
+    iSettingsChanged(newSettings);
+    request->send(200, "text/plain", "Success");
   });
 
   server.onNotFound([](AsyncWebServerRequest *request){

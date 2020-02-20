@@ -121,20 +121,24 @@ Settings getSettings(){
 
 void resetSettings(){
   Serial.println("Settings Default");
-  Settings settings = createSettings((char*)""
+  int sleep = ESP.deepSleepMax() / (uint64)60000000;
+  Serial.println(sleep);
+  char* empty = (char*)"";
+  Settings settings = createSettings(empty
     , getChipName()
     , (char*)"*******"
     , (char*)"*******"
     , (char*)"WifiMoisture"
     , (char*)"*******"
-    , ESP.deepSleepMax() / 60000000
+    , sleep
     , 1
     , 2
-    , (char*)""
-    , (char*)""
-    , (char*)"");
+    , empty
+    , empty
+    , empty);
+    printSettings(settings);
     storeSettings(settings);
-    delay(10000);
+    Serial.println("test");
 }
 
 bool settingsSet(){
