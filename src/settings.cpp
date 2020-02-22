@@ -1,3 +1,4 @@
+#include "headers/blynk.h"
 #include "headers/settings.h"
 #include "headers/utilities.h"
 #include <ver.h>
@@ -19,23 +20,13 @@ void startEeprom(){
   //if settings are empty set set to default
   Settings s = getSettings();
   if(strcmp(s.key, "")==0){
-    Serial.println("key blank setting default");
+    println("key blank setting default");
     resetSettings();
   }
-
-  //if we installed a new version let's start with a new settings
-  //if(strcmp(VERSION_SHORT,s.version) != 0){
-  //  Serial.print(VERSION_SHORT);
-  //  Serial.print(" does not equal ");
-  //  Serial.println(s.version);
-  //  resetSettings();
-  //  s = getSettings();
-  //  printSettings(s);
-  //}
 }
 
 void clearEeprom(){
-  Serial.println("Clearing eeprom");
+  println("Clearing eeprom");
   if(!eepromStarted){
     startEeprom();
   }
@@ -43,7 +34,6 @@ void clearEeprom(){
     EEPROM.write(i, 0);
   }
   EEPROM.commit();
-  printSettings();
 }
 
 Settings createSettings(char key[8]
@@ -84,8 +74,6 @@ template <class T> int EEPROM_writeAnything(int ee, const T& value)
     unsigned int i;
     for (i = 0; i < sizeof(value); i++)
           EEPROM.write(ee++, *p++);
-    //Serial.print("Eeprom wrote ");
-    Serial.println(i);
     return i;
 }
 
@@ -98,14 +86,12 @@ template <class T> int EEPROM_readAnything(int ee, T& value)
     unsigned int i;
     for (i = 0; i < sizeof(value); i++)
           *p++ = EEPROM.read(ee++);
-    //Serial.print("Eeprom read ");
-    //Serial.println(i);
     return i;
 }
 
 void storeSettings(Settings s){
-  Serial.print("Stored Settings - ");
-  printSettings(s);
+  println("Stored Settings:");
+  println(getJson(s));
   EEPROM_writeAnything(CONFIG_START, s);
   EEPROM.commit();
 }
@@ -113,16 +99,12 @@ void storeSettings(Settings s){
 Settings getSettings(){
   Settings s;
   EEPROM_readAnything(CONFIG_START, s);
-  //Serial.print("Read in Settings - ");
-  //printSettings(s);
   _sensorSettings = s;
   return s;
 }
 
 void resetSettings(){
-  Serial.println("Settings Default");
-  int sleep = ESP.deepSleepMax() / (uint64)60000000;
-  Serial.println(sleep);
+  int sleep = (ESP.deepSleepMax() / (uint64)60000000) * .95;
   char* empty = (char*)"";
   Settings settings = createSettings(empty
     , getChipName()
@@ -136,20 +118,19 @@ void resetSettings(){
     , empty
     , empty
     , empty);
-    printSettings(settings);
     storeSettings(settings);
-    Serial.println("test");
+    println("Settings Default " + getJson(settings));
 }
 
 bool settingsSet(){
   Settings s = getSettings();
 
   if(strcmp(s.key,"")==0){
-    Serial.println("settings not yet set");
+    println("settings not yet set");
     return false;
   }
   else{
-    Serial.printf("key set: %s\n", s.key);
+    printf("key set: %s\n", s.key);
     return true;
   }
 }

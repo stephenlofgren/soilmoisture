@@ -3,7 +3,6 @@ import zlib
 import os
 import htmlark
 
-
 dataFolder = 'src/data/'
 staticFolder = 'src/static/'
 
@@ -35,4 +34,9 @@ def toHeader(source, dest, fileName):
         f.write('\n};')
         f.close()
 
-toHeader("html/index.html", "src/static", "index.html.gz")
+def buildStatic():
+    toHeader("html/index.html", "src/static", "index.html.gz")
+
+if __name__ == '__main__' or __name__ == "SCons.Script":
+    print("building static")
+    buildStatic()

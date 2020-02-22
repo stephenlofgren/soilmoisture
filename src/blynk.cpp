@@ -1,13 +1,13 @@
 #include <BlynkSimpleEsp8266.h>
 #include "headers/blynk.h"
 #include "headers/settings.h"
-    
+
 void blynkSetup(){
     _sensorSettings = getSettings();
-    Serial.print("Connecting to Blynk with key: ");
-    Serial.println(_sensorSettings.blynkKey);
+    println("Connecting to Blynk with key: " 
+      + String(_sensorSettings.blynkKey));
     Blynk.config(_sensorSettings.blynkKey);
-    Serial.println("Blynk Running");
+    println("Blynk Running");
 }
 
 String interpretReading(float moistureValue)
@@ -30,15 +30,22 @@ String interpretReading(float moistureValue)
 }
 
 void blynkLoop(int moisture){
-    Serial.print("Connecting to Blynk");
     if(Blynk.connect()){
       Blynk.virtualWrite(_sensorSettings.valuePin, moisture);
-      Blynk.virtualWrite(_sensorSettings.messagePin, interpretReading(moisture));
+      println(interpretReading(moisture));
     }
     else
     {
-      Serial.print("Blynk Not Running");
+      Blynk.connect();
+      println("Connecting to Blynk");
     }
     
 }
 
+void println(String message){
+  Serial.println(message);
+  WidgetTerminal terminal(_sensorSettings.messagePin);
+  terminal.println(_sensorSettings.chipName + (String)" - " + message);
+  terminal.flush();
+  //Blynk.virtualWrite(_sensorSettings.messagePin, message);
+}

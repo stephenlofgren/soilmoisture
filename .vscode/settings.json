@@ -6,6 +6,8 @@
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "files.associations": {
-        "functional": "cpp"
+        "functional": "cpp",
+        "sstream": "cpp",
+        "regex": "cpp"
     },
 }

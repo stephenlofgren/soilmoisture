@@ -1,5 +1,6 @@
-#include "headers/mqtt.h"
+#include "headers/blynk.h"
 #include "headers/settings.h"
+#include "headers/mqtt.h"
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
@@ -20,7 +21,7 @@ void mqttLoop(int moistureReading)
         client.connect(String(ESP.getChipId()).c_str(), _sensorSettings.mqttUser, _sensorSettings.mqttPassword);
         delay(500);
     }
-    Serial.println("Publishing MQTT");
+    println("Publishing MQTT");
     
     String topic = String("ESP") + _sensorSettings.chipName + String("/moisture/");
     client.publish(topic.c_str(), String(moistureReading).c_str(), true);

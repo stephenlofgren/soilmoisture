@@ -16,38 +16,38 @@ void moistureSetup(){
 }
 
 void wifiSetup(){
-  Settings s = printSettings();
+  Settings s = getSettings();
   if(settingsSet()){
-    Serial.println("Connecting to Wifi");
+    println("Connecting to Wifi");
     WiFi.mode(WIFI_STA);
     WiFi.begin(s.ssid, s.password);
     while(WiFi.status() != WL_CONNECTED){
       delay(500);
     }
-    Serial.print("Wifi Connected");
+    println("Wifi Connected");
   }
   else{
-    Serial.println("Starting Accesspoint");
+    println("Starting Accesspoint");
     WiFi.softAP(s.accessPointName);
     webSetup();
   }
 }
 
 void loopConfig(){
-  Serial.println("Starting Accesspoint");
+  println("Starting Accesspoint");
   Settings s = getSettings();
   WiFi.mode(WIFI_OFF);
   WiFi.softAP(s.accessPointName);
   webSetup();
-  Serial.println("configuring");
+  println("configuring");
   while(true){
     delay(100);
   }
 }
 
 void loopRun(){
-  Serial.println("starting loop");
-  _sensorSettings = printSettings();
+  println("starting loop");
+  _sensorSettings = getSettings();
   digitalWrite(D1, HIGH);
   float moisture = readMoisture();
   if(moisture > -1) //probe attached
@@ -56,12 +56,16 @@ void loopRun(){
     mqttLoop(moisture);
     digitalWrite(D5, LOW);
 
-    Serial.print("Going to sleep for ");
     uint64 sleep = (uint64)_sensorSettings.sleepInterval * 60000000; 
-    Serial.print(uint64ToString(sleep));
-    Serial.print("/");
-    Serial.print(uint64ToString(ESP.deepSleepMax()));
-    Serial.println(" microseconds");
+    //If we set the value too high use the max allowed value
+    if(sleep > ESP.deepSleepMax() * .95)
+      sleep = ESP.deepSleepMax() *.95;
+
+    println("Going to sleep for " 
+      + uint64ToString(sleep) 
+      + "/" 
+      + uint64ToString(ESP.deepSleepMax()) 
+      + " microseconds");
     ESP.deepSleep(sleep);
     delay(1000);
   }
@@ -77,9 +81,7 @@ void setup() {
   delay(1000);
   pinMode(D0, INPUT); 
   int doConf = digitalRead(D0);
-  Serial.print("D0 ");
-  Serial.println(doConf);
-
+  
   if(settingsSet() && doConf == HIGH){
     loopfcnPtr = loopRun;
     wifiSetup();

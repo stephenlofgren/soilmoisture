@@ -5,9 +5,8 @@
 #include <Arduino.h>  // for type definitions
 #include "headers/settings.h"
 
-void printWifiStatus();
-Settings printSettings();
-char* printWiFiDisconnectReason(int reasonCode);
-void printSettings(Settings s);
+char* decodeWiFiStatus(wl_status_t status);
+char* getWiFiDisconnectReason(int reasonCode);
+String getWifiStatusString();
 String uint64ToString(uint64_t input);
 #endif

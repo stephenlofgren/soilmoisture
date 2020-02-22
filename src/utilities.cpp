@@ -29,7 +29,7 @@ char* decodeWiFiStatus(wl_status_t status){
   else return (char*)status;
 }
 
-char* printWiFiDisconnectReason(int reasonCode){
+char* getWiFiDisconnectReason(int reasonCode){
   if(reasonCode == 1){
     return (char*)"WIFI_DISCONNECT_REASON_UNSPECIFIED";
   }
@@ -117,56 +117,16 @@ char* printWiFiDisconnectReason(int reasonCode){
   return (char*)reasonCode;
 }
 
-
-void printWifiStatus() {
-  // print the SSID of the network you're attached to:
-  Serial.print("SSID:");
-  Serial.print(WiFi.SSID());
-  // print your WiFi shield's IP address:
+String getWifiStatusString() {
   IPAddress ip = WiFi.localIP();
-  Serial.print("; IP Address:");
-  Serial.print(ip);
-
-  Serial.print("; Status:");
-  Serial.print(decodeWiFiStatus(WiFi.status()));
-
-  // print the received signal strength:
   long rssi = WiFi.RSSI();
-  Serial.print("; (RSSI):");
-  Serial.print(rssi);
-  Serial.println(" dBm");
-}
 
-void printSettings(Settings s){
-  Serial.print("Conf Key: ");
-  Serial.println(s.key);
-  Serial.print(" SSID: ");
-  Serial.println(s.ssid);
-  Serial.print(" pwd: ");
-  Serial.println(s.password);
-  Serial.print(" ap: ");
-  Serial.println(s.accessPointName);
-  Serial.print(" blynkKey: ");
-  Serial.println(s.blynkKey);
-  Serial.print(" sleepInterval: ");
-  Serial.println(s.sleepInterval);
-  Serial.print(" ver: ");
-  Serial.println(s.version);
-  Serial.print(" valuePin: ");
-  Serial.println(s.valuePin);
-  Serial.print(" messagePin: ");
-  Serial.println(s.messagePin);
-  Serial.print(" mqttServer: ");
-  Serial.println(s.mqttServer);
-  Serial.print(" mqttUser: ");
-  Serial.println(s.mqttUser);
-  Serial.print(" mqttPassword: ");
-  Serial.println(s.mqttPassword);
- }
-Settings printSettings(){
-  _sensorSettings = getSettings();
-  printSettings(_sensorSettings);
-  return _sensorSettings;
+  String message = "SSID:" + WiFi.SSID() 
+    + "; IP Address:" + ip.toString() 
+    + "; Status:" + decodeWiFiStatus(WiFi.status())
+    + "; (RSSI):" + rssi 
+    + " dBm";
+  return message;
 }
 
 String uint64ToString(uint64_t input) {
@@ -185,4 +145,3 @@ String uint64ToString(uint64_t input) {
   } while (input);
   return result;
 }
-
