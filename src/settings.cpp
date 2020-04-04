@@ -6,15 +6,9 @@
 
 bool eepromStarted = false;
 Settings _sensorSettings;
-char chipName[9];
-
-char* getChipName(){
-  itoa(ESP.getChipId(), chipName, 16);
-  return chipName;
-}
 
 void startEeprom(){
-  EEPROM.begin(512);
+  EEPROM.begin(1024);
   eepromStarted = true;
   
   //if settings are empty set set to default
@@ -30,6 +24,7 @@ void clearEeprom(){
   if(!eepromStarted){
     startEeprom();
   }
+  Serial.println("length " + String(EEPROM.length()));
   for (uint i = 0 ; i < EEPROM.length() ; i++) {
     EEPROM.write(i, 0);
   }
@@ -47,7 +42,10 @@ Settings createSettings(char key[8]
     , int messagePin
     , char mqttServer[32]
     , char mqttUser[32]
-    , char mqttPassword[32]){
+    , char mqttPassword[32]
+    , int maxReading
+    , int targetReading
+    , int minReading){
   Settings settings;
   strcpy(settings.key, key);
   strcpy(settings.chipName, chipName);
@@ -62,6 +60,9 @@ Settings createSettings(char key[8]
   settings.sleepInterval = sleepInterval;
   settings.valuePin = valuePin;
   settings.messagePin = messagePin;
+  settings.maxReading = maxReading;
+  settings.targetReading = targetReading;
+  settings.minReading = minReading;
   return settings;
 }
 
@@ -94,6 +95,7 @@ void storeSettings(Settings s){
   println(getJson(s));
   EEPROM_writeAnything(CONFIG_START, s);
   EEPROM.commit();
+  println("Settings Stored");
 }
 
 Settings getSettings(){
@@ -104,7 +106,12 @@ Settings getSettings(){
 }
 
 void resetSettings(){
+  #ifdef TARGET_ESP8266
   int sleep = (ESP.deepSleepMax() / (uint64)60000000) * .95;
+  #endif
+  #ifdef TARGET_ESP32
+  int sleep = 200; //best I can tell esp32 doesn't support a sleep max calculation I might be able to rebuild calculation for both
+  #endif
   char* empty = (char*)"";
   Settings settings = createSettings(empty
     , getChipName()
@@ -117,7 +124,10 @@ void resetSettings(){
     , 2
     , empty
     , empty
-    , empty);
+    , empty
+    , 0
+    , 500
+    , 1000);
     storeSettings(settings);
     println("Settings Default " + getJson(settings));
 }
@@ -136,18 +146,27 @@ bool settingsSet(){
 }
 
 String getJson(Settings s){
+  #ifdef TARGET_ESP8266
+    int sleep = ESP.deepSleepMax() / (uint64)60000000;
+  #endif
+  #ifdef TARGET_ESP32
+    int sleep = 200;
+  #endif
       String json = String("{\"key\":\"")           + s.key
     + String("\", \n \"chipName\":\"") + s.chipName
     + String("\", \n \"ssid\":\"")                + s.ssid
     + String("\", \n \"accessPointName\":\"")     + s.accessPointName
     + String("\", \n \"blynkKey\":\"")     + s.blynkKey
     + String("\", \n \"sleepInterval\":\"")     + s.sleepInterval
-    + String("\", \n \"maxSleepInterval\":\"")     + uint64ToString(ESP.deepSleepMax() / (uint64)60000000)
+    + String("\", \n \"maxSleepInterval\":\"")     + uint64ToString(sleep)
     + String("\", \n \"valuePin\":\"")     + s.valuePin
     + String("\", \n \"messagePin\":\"")     + s.messagePin
     + String("\", \n \"mqttServer\":\"")     + s.mqttServer
     + String("\", \n \"mqttUser\":\"")     + s.mqttUser
     + String("\", \n \"mqttPassword\":\"")     + s.mqttPassword
+    + String("\", \n \"maxReading\":\"")     + s.maxReading
+    + String("\", \n \"targetReading\":\"")     + s.targetReading
+    + String("\", \n \"minReading\":\"")     + s.minReading
     + "\"}";
     return json;
 }

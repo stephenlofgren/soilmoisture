@@ -18,6 +18,9 @@
     char mqttServer[32];
     char mqttUser[32];
     char mqttPassword[32];
+    int maxReading;
+    int targetReading;
+    int minReading;
   } Settings, *pSettings;
 
   extern Settings _sensorSettings;
@@ -37,7 +40,10 @@
       , int messagePin
       , char mqttServer[32]
       , char mqttUser[32]
-      , char mqttPassword[32]);
+      , char mqttPassword[32]
+      , int maxReading
+      , int targetReading
+      , int minReading);
 
   Settings loadSettings();
 

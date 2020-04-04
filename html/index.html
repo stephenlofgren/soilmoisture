@@ -33,6 +33,9 @@
                    $("#mqttServer").val(msg["mqttServer"]);
                    $("#mqttUser").val(msg["mqttUser"]);
                    $("#mqttPassword").val(msg["mqttPassword"]);
+                   $("#maxReading").val(msg["maxReading"]);
+                   $("#targetReading").val(msg["targetReading"]);
+                   $("#minReading").val(msg["minReading"]);
                  } else {
                    console.log("some stuff");
                  }
@@ -58,6 +61,9 @@
           mqttServer: $("#mqttServer").val(),
           mqttUser: $("#mqttUser").val(),
           mqttPassword: $("#mqttPassword").val(),
+          maxReading: $("#maxReading").val(),
+          targetReading: $("#targetReading").val(),
+          minReading: $("#minReading").val(),
         };
 
         $.ajax({
@@ -80,6 +86,34 @@
         $.ajax({
              type: "POST",
              url: "/reset",
+             dataType: "json",
+             success: function (msg) {
+                 if (msg) {
+                     location.reload(true);
+                 } else {
+
+                 }
+             }             
+         });
+      }
+      function clearEeprom(){
+        $.ajax({
+             type: "POST",
+             url: "/clear",
+             dataType: "json",
+             success: function (msg) {
+                 if (msg) {
+                     location.reload(true);
+                 } else {
+
+                 }
+             }             
+         });
+      }
+      function calibrate(){
+        $.ajax({
+             type: "POST",
+             url: "/calibrate",
              dataType: "json",
              success: function (msg) {
                  if (msg) {
@@ -128,8 +162,22 @@
       <label for="mqttPassword">MQTT Password</label>
       <input id="mqttPassword" />
       <br />
+      <label for="maxReading">Max Reading</label>
+      <input id="maxReading" />
+      <br />
+      <label for="targetReading">Target Reading</label>
+      <input id="targetReading" />
+      <br />
+      <label for="minReading">Min Reading</label>
+      <input id="minReading" />
+      <br />
       <input value="Submit" name="submit" type="button" onclick="submitForm()" />
+      <br />
       <input value="Reset" name="submit" type="button" onclick="resetSettings()" />
+      <br />
+      <input value="Clear" name="submit" type="button" onclick="clearEeprom()" />
+      <br />
+      <input value="Calibrate" name="submit" type="button" onclick="calibrate()" />
     </form>
   </body>
 

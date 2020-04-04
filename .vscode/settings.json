@@ -10,4 +10,5 @@
         "sstream": "cpp",
         "regex": "cpp"
     },
+    "python.pythonPath": "/home/stephen/.platformio/penv/bin/python",
 }

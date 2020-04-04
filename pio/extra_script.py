@@ -1,4 +1,12 @@
 Import("env")
+print(env)
+
+import os
+try:
+    user_paths = os.environ['PYTHONPATH'].split(os.pathsep)
+except KeyError:
+    user_paths = []
+print(user_paths)
 
 def before_build(source, target, env):
     print("before_build")

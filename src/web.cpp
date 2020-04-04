@@ -1,8 +1,4 @@
-#include "headers/blynk.h"
 #include "headers/web.h"
-#include "headers/utilities.h"
-#include <ver.h>
-#include <string>
 
 using namespace std; // stringstream, like almost everything, is in std
 
@@ -13,13 +9,18 @@ void setSettingsChangedHandler(void (*f)(Settings settings)){
     iSettingsChanged = f;
 }
 
+void settingsChanged(Settings s){
+    if(iSettingsChanged != 0){
+      iSettingsChanged(s);
+    }
+}
+
 void webSetupHandlers(){
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });
 
   server.on("/settings", HTTP_GET, [](AsyncWebServerRequest *request){
-    //request->send(200, "text/plain", String(ESP.getFreeHeap()));
     Settings s = getSettings();
     String json = getJson(s);
     println("-------------------------------------------------------------------------");
@@ -29,8 +30,8 @@ void webSetupHandlers(){
     AsyncWebServerResponse *response =
       request->beginResponse_P(200, "text/json", json.c_str());
     request->send(response);
-
   });
+
   server.on("/index.html", HTTP_GET, [](AsyncWebServerRequest *request){
     //request->send(200, "text/plain", String(ESP.getFreeHeap()));
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", index_html_gz, index_html_gz_len);
@@ -43,7 +44,30 @@ void webSetupHandlers(){
   server.on("/reset", HTTP_POST, [](AsyncWebServerRequest *request){
     resetSettings();
     request->send(200, "text/plain", "Success");
-});
+  });
+
+  server.on("/calibrate", HTTP_POST, [](AsyncWebServerRequest *request){
+    Serial.println("getting settings");
+    Serial.println("taking reading");
+    int r = takeReading(10, 10);//must only take one reading as delay breaks the web handler
+    Settings s = getSettings();
+    s.targetReading = r;
+    storeSettings(s);
+    Serial.println("reading taken");
+    String json = getJson(s);
+    Serial.println("-------------------------------------------------------------------------");
+    Serial.println(json);
+    Serial.println("-------------------------------------------------------------------------");
+
+    request->send(200, "text/plain", "Success");
+  });
+
+  server.on("/clear", HTTP_POST, [](AsyncWebServerRequest *request){
+    clearEeprom();
+    resetSettings();
+
+    request->send(200, "text/plain", "Success");
+  });
 
   server.on("/index.html", HTTP_POST, [](AsyncWebServerRequest *request){
     int i;
@@ -102,6 +126,18 @@ void webSetupHandlers(){
           p->value().toCharArray(newSettings.mqttPassword, 32);
           printf("mqttPassword changed to %s\n", newSettings.mqttPassword );
         }
+        else if(p->name() == "maxReading"){
+          newSettings.maxReading = atoi((char*)p->value().c_str());
+          printf("maxReading changed to %d\n", newSettings.maxReading );
+        }
+        else if(p->name() == "targetReading"){
+          newSettings.targetReading = atoi((char*)p->value().c_str());
+          printf("targetReading changed to %d\n", newSettings.targetReading );
+        }
+        else if(p->name() == "minReading"){
+          newSettings.minReading = atoi((char*)p->value().c_str());
+          printf("minReading changed to %d\n", newSettings.minReading );
+        }
       }
       else{
         printf("_QUERY[%s]: %s\n", p->name().c_str(), p->value().c_str());
@@ -112,7 +148,7 @@ void webSetupHandlers(){
     println(getJson(newSettings));
     
     storeSettings(newSettings);
-    iSettingsChanged(newSettings);
+    settingsChanged(newSettings);
     request->send(200, "text/plain", "Success");
   });
 

@@ -1,5 +1,13 @@
 #include "headers/utilities.h"
-#include "headers/settings.h"
+#ifdef TARGET_ESP8266
+  #include <ESP8266WiFi.h>
+#endif
+#ifdef TARGET_ESP32
+  #include <WiFi.h>
+#endif
+
+char chipName[9];
+char wakeReason[50];
 
 char* decodeWiFiStatus(wl_status_t status){
   if (status == WL_NO_SHIELD){
@@ -145,3 +153,104 @@ String uint64ToString(uint64_t input) {
   } while (input);
   return result;
 }
+
+char* getChipName(){
+#ifdef TARGET_ESP8266
+  uint64_t chipid = ESP.getChipId();
+#endif
+#ifdef TARGET_ESP32
+  uint64_t chipid = ESP.getEfuseMac();
+#endif
+  itoa(chipid, chipName, 16);
+  return chipName;
+}
+
+bool didWakeFromDeepSleep(){
+  char* reason = getWakeupReason();
+  bool result =  strcmp(reason, "Deep-Sleep Wake") == 0;
+  return result;
+}
+
+char* getWakeupReason(){
+  #ifdef TARGET_ESP32
+  esp_sleep_wakeup_cause_t wakeup_reason;
+
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+  switch(wakeup_reason)
+  {
+    case ESP_SLEEP_WAKEUP_EXT0 : 
+      println("Wakeup caused by external signal using RTC_IO"); 
+      strcpy_P(wakeReason, PSTR("External System"));
+      break;
+    case ESP_SLEEP_WAKEUP_EXT1 : 
+      println("Wakeup caused by external signal using RTC_CNTL");
+      strcpy_P(wakeReason, PSTR("External System"));
+      break;
+    case ESP_SLEEP_WAKEUP_TIMER :
+      println("Wakeup caused by timer");
+      strcpy_P(wakeReason, PSTR("Deep-Sleep Wake"));
+      break;
+    case ESP_SLEEP_WAKEUP_TOUCHPAD : 
+      println("Wakeup caused by touchpad"); 
+      strcpy_P(wakeReason, PSTR("Sensor"));
+      break;
+    case ESP_SLEEP_WAKEUP_ULP :
+      println("Sensor");
+      strcpy_P(wakeReason, PSTR("Sensor"));
+      break;
+    default : 
+      sprintf (wakeReason, "Other: %d\n", wakeup_reason);
+      println(String(wakeReason));
+      break;
+  }
+  #endif
+  #ifdef TARGET_ESP8266
+  switch (ESP.getResetInfoPtr()->reason) {
+    case REASON_DEFAULT_RST:
+      // do something at normal startup by power on
+      strcpy_P(wakeReason, PSTR("Power on"));
+      break;
+     
+    case REASON_WDT_RST:
+      // do something at hardware watch dog reset
+      strcpy_P(wakeReason, PSTR("Hardware Watchdog"));     
+      break;
+     
+    case REASON_EXCEPTION_RST:
+      // do something at exception reset
+      strcpy_P(wakeReason, PSTR("Exception"));     
+      break;
+     
+    case REASON_SOFT_WDT_RST:
+      // do something at software watch dog reset
+      strcpy_P(wakeReason, PSTR("Software Watchdog"));
+      break;
+     
+    case REASON_SOFT_RESTART:
+      // do something at software restart ,system_restart
+      strcpy_P(wakeReason, PSTR("Software/System restart"));
+      break;
+     
+    case REASON_DEEP_SLEEP_AWAKE:
+      // do something at wake up from deep-sleep
+      strcpy_P(wakeReason, PSTR("Deep-Sleep Wake"));
+      break;
+     
+    case REASON_EXT_SYS_RST:
+      // do something at external system reset (assertion of reset pin)
+      strcpy_P(wakeReason, PSTR("External System"));
+      break;
+     
+    default: 
+      // do something when reset occured for unknown reason
+      strcpy_P(wakeReason, PSTR("Other"));     
+      break;
+  }
+  char buffer [30];
+  sprintf (buffer, "\n\nReason for reboot: %s\n", wakeReason);
+  println(String(buffer));
+  println("----------------------------------------------");
+  #endif
+  return wakeReason;
+}
+
